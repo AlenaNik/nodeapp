@@ -1,22 +1,26 @@
 const express = require('express')
-const router = express.Router()
 const passport = require('passport')
-// GET to Auth/google
+const router = express.Router()
 
-router.get('/google',
-    passport.authenticate('google', {scope: ['profile']})
+// @desc    Auth with Google
+// @route   GET /auth/google
+router.get('/google', passport.authenticate('google', { scope: ['profile'] }))
+
+// @desc    Google auth callback
+// @route   GET /auth/google/callback
+router.get(
+    '/google/callback',
+    passport.authenticate('google', { failureRedirect: '/' }),
+    (req, res) => {
+        res.redirect('/dashboard')
+    }
 )
 
-router.get('/google/callback',
-    passport.authenticate('google', {failureRedirect:'/'}),
-    function(req, res) {
+// @desc    Logout user
+// @route   /auth/logout
+router.get('/logout', (req, res) => {
+    req.logout()
     res.redirect('/')
-}
-)
-
-// GET Dashboard
-router.get('/dashboard', (req, res) => {
-    res.render('dashboard')
 })
 
 module.exports = router
